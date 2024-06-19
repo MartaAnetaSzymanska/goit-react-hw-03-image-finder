@@ -1,8 +1,10 @@
 import { Component } from "react";
 import { Searchbar } from "./SearchBar/Searchbar";
 import { ImageGallery } from "./ImageGallery/ImageGallery";
+import { Button } from "./Button/Button";
+import { Loader } from "./Loader/Loader";
 import { getApi } from "./pixabay-api";
-import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import styles from "./App.module.scss";
 
 export class App extends Component {
@@ -12,7 +14,9 @@ export class App extends Component {
     images: [],
     loading: false,
     error: false,
-    selectedImage: null,
+    end: false,
+    showModal: false,
+    largeImageURL: "",
   };
 
   handleSubmit = (e) => {
@@ -26,32 +30,32 @@ export class App extends Component {
 
   fetchImages = async (query, page) => {
     try {
-      this.setState({ isLoading: true });
+      this.setState({ loading: true });
 
       // fetch data from API:
       const fetchedImages = await getApi(query, page);
       const { hits, totalHits } = fetchedImages;
 
       if (totalHits === 0) {
-        toast.error(
+        toast(
           "Sorry, There are no images matching your search query. Please try again.",
         );
         return;
       }
-      if (page === 1) {
-        toast.success(`Hooray!We found ${totalHits} images`);
+      if (totalHits > 0) {
+        toast(`Hooray!We found ${totalHits} images`);
       }
-      if (page * 12 >= totalHits) {
-        this.setState({ isEnd: true });
-        toast("We are're sorry, but you've reached the end of search results.");
+      if (page === totalHits / 12) {
+        this.setState({ end: true });
+        toast("We're sorry, but you've reached the end of search results.");
       }
       this.setState((prevState) => ({
         images: [...prevState.images, ...hits],
       }));
     } catch {
-      this.setState({ isError: true });
+      this.setState({ error: true });
     } finally {
-      this.setState({ isLoading: false });
+      this.setState({ loading: false });
     }
   };
 
@@ -63,17 +67,21 @@ export class App extends Component {
     }
   };
 
-  handleClick = () => {
+  handleButtonClick = () => {
     this.setState((prevState) => ({ page: prevState.page + 1 }));
   };
 
   render() {
-    const { images, isLoading, isError, isEnd } = this.state;
+    const { images, loading, error, showModal, largeImageURL } = this.state;
     return (
       <div className={styles.app}>
         <Searchbar onSubmit={this.handleSubmit}></Searchbar>
-        {/* Render ImageGallery when there is at least 1 image */}
-        {images.length >= 1 && <ImageGallery images={images}></ImageGallery>}
+        <ImageGallery images={images}></ImageGallery>
+        {images.length > 0 && (
+          <Button onClick={this.handleButtonClick}></Button>
+        )}
+        {loading && <Loader></Loader>}
+        {error && toast.error("Oops, something went wrong! Reload this page!")}
       </div>
     );
   }
