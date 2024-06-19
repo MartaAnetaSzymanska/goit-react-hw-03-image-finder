@@ -7,19 +7,29 @@ export class ImageGalleryItem extends Component {
     largeImageURL: PropTypes.string.isRequired,
     webformatURL: PropTypes.string.isRequired,
     tags: PropTypes.string.isRequired,
+    onItemClick: PropTypes.func.isRequired,
   };
 
   render() {
-    const { webformatURL, tags } = this.props;
+    const { image, onItemClick } = this.props;
 
     return (
       <li className={styles.imageGalleryItem}>
         <img
           className={styles.imageGalleryItemImage}
-          src={webformatURL}
-          alt={tags}
+          src={image.webformatURL}
+          alt={image.tags}
+          onClick={onItemClick}
         />
       </li>
     );
   }
 }
+
+ImageGalleryItem.propTypes = {
+  image: PropTypes.shape({
+    webformatURL: PropTypes.string.isRequired,
+    tags: PropTypes.string.isRequired,
+  }).isRequired,
+  onItemClick: PropTypes.func,
+};
