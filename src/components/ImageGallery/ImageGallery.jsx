@@ -9,7 +9,7 @@ export const ImageGallery = ({ images, onImageClick }) => {
         <ImageGalleryItem
           key={image.id}
           image={image}
-          onItemClick={onImageClick}
+          onItemClick={() => onImageClick(image)}
         />
       ))}
     </ul>

@@ -3,13 +3,6 @@ import PropTypes from "prop-types";
 import styles from "./ImageGalleryItem.module.scss";
 
 export class ImageGalleryItem extends Component {
-  staticPropTypes = {
-    largeImageURL: PropTypes.string.isRequired,
-    webformatURL: PropTypes.string.isRequired,
-    tags: PropTypes.string.isRequired,
-    onItemClick: PropTypes.func.isRequired,
-  };
-
   render() {
     const { image, onItemClick } = this.props;
 
